@@ -1,17 +1,42 @@
 import React from 'react';
 
-import { NavigationContainer} from '@react-navigation/native'
+import { NavigationContainer, DefaultTheme, DarkTheme, useTheme} from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
 import Subscribe from './src/screens/Subscribe';
 import { MaterialIcons } from '@expo/vector-icons';
 
+import { Provider, useSelector } from 'react-redux'
+
+import store from './src/store'
+
 
 const Stack = createStackNavigator()
 const Tabs = createBottomTabNavigator()
 
+const myDarkTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    headerColor: "#404040",
+    iconColor: "white",
+    activeTabColor: "white"
+  }
+}
+
+const myDefaultTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    headerColor: "white",
+    iconColor: "black",
+    activeTabColor: "red"
+  }
+}
+
 const Home = () => {
+  const { colors } = useTheme()
 
   return (
     <Tabs.Navigator
@@ -37,7 +62,7 @@ const Home = () => {
         },
       })}
       tabBarOptions={{
-        activeTintColor: 'red',
+        activeTintColor: colors.activeTabColor,
         inactiveTintColor: 'gray',
       }}
     >
@@ -51,19 +76,21 @@ const Home = () => {
 }
 export default () => {
   return (
-    <Navigation />
-
+    <Provider store={store}>
+      <Navigation />
+    </Provider>
   )
 }
 
 export function Navigation() {
-
+  const currentTheme = useSelector(state => {
+    return state.myDarkMode
+  })
   return (
 
-    <NavigationContainer>
+    <NavigationContainer theme={currentTheme ? myDarkTheme : myDefaultTheme}>
       <Stack.Navigator headerMode="none">
         <Stack.Screen name="home" component={Home} />
-
       </Stack.Navigator>
     </NavigationContainer>
 
